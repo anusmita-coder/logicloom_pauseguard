@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PauseGuard | Stop Panic, Stay Safe</title>
+  <style>
+    * { box-sizing: border-box; font-family: "Segoe UI", sans-serif; }
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #141e30, #243b55);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+    }
+    .app { width: 100%; max-width: 650px; padding: 20px; }
+    header { text-align: center; margin-bottom: 20px; }
+    .card, .pause {
+      background: #ffffff; color: #333; border-radius: 16px;
+      padding: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+      margin-bottom: 20px;
+    }
+    textarea {
+      width: 100%; min-height: 120px; padding: 12px; margin: 10px 0;
+      border-radius: 10px; border: 1px solid #ccc; resize: none;
+    }
+    .samples { text-align: center; margin-bottom: 10px; }
+    .samples button {
+      margin: 4px; padding: 6px 12px; border-radius: 20px;
+      border: none; cursor: pointer;
+    }
+    .main-btn {
+      width: 100%; padding: 14px; border-radius: 12px; border: none;
+      background: linear-gradient(90deg, #ff512f, #dd2476);
+      color: #fff; font-size: 1rem; cursor: pointer;
+    }
+    .pause { text-align: center; }
+    .timer { font-size: 3rem; color: #ff3b3b; font-weight: bold; }
+    .calm { color: #2e7d32; font-style: italic; }
+    pre { white-space: pre-wrap; font-size: 0.9rem; }
+    footer { text-align: center; font-size: 0.85rem; }
+    footer a { color: #ffcc00; text-decoration: none; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>🛑 PauseGuard</h1>
+    <p>Panic Interruption for Cyber Fraud (India)</p>
+  </header>
+
+  <section class="card">
+    <label>Paste suspicious message or call transcript</label>
+    <textarea id="userText" placeholder="Example: This is Cyber Crime Dept. Your Aadhaar is linked to illegal activity..."></textarea>
+    <div class="samples">
+      <button onclick="loadSample(1)">🚨 Fake Police</button>
+      <button onclick="loadSample(2)">🏦 Bank KYC</button>
+      <button onclick="loadSample(3)">🎉 Lottery</button>
+    </div>
+    <button class="main-btn" onclick="startPause()">Analyze Safely</button>
+  </section>
+
+  <section id="pauseScreen" class="pause hidden">
+    <h2>⚠️ Pause for a moment</h2>
+    <p>This message may be designed to cause panic.</p>
+    <div class="timer" id="timer">30</div>
+    <p class="calm">You are safe. Take a breath.</p>
+  </section>
+
+  <section id="resultCard" class="card hidden">
+    <h3>Safety Analysis</h3>
+    <pre id="analysis"></pre>
+  </section>
+
+  <footer>
+    <p>Authorities never ask for OTP or money.</p>
+    <a href="https://cybercrime.gov.in" target="_blank">Report Cyber Crime</a>
+  </footer>
+</div>
+
+<script>
+function loadSample(type) {
+  const samples = {
+    1: "This is Cyber Crime Department. Your Aadhaar is linked to illegal activity. You will be arrested today.",
+    2: "Your bank KYC is expired. Account will be blocked in 2 hours. Call immediately.",
+    3: "Congratulations! You won Rs. 25 lakh lottery. Pay processing fee now."
+  };
+  document.getElementById("userText").value = samples[type];
+}
+
+function startPause() {
+  const text = document.getElementById("userText").value.trim();
+  if (!text) { alert("Please enter a message."); return; }
+
+  document.getElementById("pauseScreen").classList.remove("hidden");
+  document.getElementById("resultCard").classList.add("hidden");
+
+  let time = 30;
+  document.getElementById("timer").innerText = time;
+
+  const interval = setInterval(() => {
+    time--;
+    document.getElementById("timer").innerText = time;
+    if (time === 0) { clearInterval(interval); analyzeText(text); }
+  }, 1000);
+}
+
+function analyzeText(message) {
+  const text = message.toLowerCase();
+  const patterns = {
+    urgency: ["urgent", "immediately", "now", "today", "hours"],
+    threat: ["arrest", "blocked", "legal", "case", "court"],
+    authority: ["police", "cbi", "cyber", "government", "rbi"],
+    money: ["pay", "fee", "fine", "transfer"],
+    secrecy: ["do not tell", "confidential", "secret"]
+  };
+
+  let score = 0;
+  let triggers = [];
+  for (let category in patterns) {
+    patterns[category].forEach(word => {
+      if (text.includes(word)) { score += 15; triggers.push(category); }
+    });
+  }
+  score = Math.min(score, 100);
+
+  let verdict = "Safe";
+  if (score > 55) verdict = "Fraud";
+  else if (score > 25) verdict = "Likely Fraud";
+
+  const result = {
+    verdict,
+    risk_score_percent: score,
+    panic_triggers: [...new Set(triggers)],
+    explanation:
+      "This message uses fear, urgency, and authority to rush decisions. Real authorities never threaten or demand secrecy.",
+    recommended_actions: [
+      "Do not share OTP or personal details",
+      "Do not act immediately",
+      "Talk to a trusted person",
+      "Report to cybercrime.gov.in"
+    ]
+  };
+
+  document.getElementById("analysis").textContent = JSON.stringify(result, null, 2);
+  document.getElementById("pauseScreen").classList.add("hidden");
+  document.getElementById("resultCard").classList.remove("hidden");
+}
+</script>
+</body>
+</html>
